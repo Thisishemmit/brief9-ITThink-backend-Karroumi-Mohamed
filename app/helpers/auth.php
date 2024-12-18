@@ -1,4 +1,5 @@
 <?php
+<<<<<<< Updated upstream
 function login_user($email, $password, $pdo)
 {
     $stmt = $pdo->prepare('SELECT * FROM users WHERE email = :email AND password = :password');
@@ -32,6 +33,26 @@ function is_logged_in()
 }
 
 function require_login()
+=======
+
+function is_logged_in()
+{
+    return isset($_SESSION['user']);
+}
+
+function login_user($user)
+{
+    $_SESSION['user'] = $user;
+}
+
+function logout_user()
+{
+    unset($_SESSION['user']);
+    session_destroy();
+}
+
+function require_auth()
+>>>>>>> Stashed changes
 {
     if (!is_logged_in()) {
         header('Location: /login');
@@ -39,8 +60,17 @@ function require_login()
     }
 }
 
+<<<<<<< Updated upstream
 function logout_user()
 {
     unset($_SESSION['user_id']);
     session_destroy();
+=======
+function require_guest()
+{
+    if (is_logged_in()) {
+        header('Location: /');
+        exit;
+    }
+>>>>>>> Stashed changes
 }
