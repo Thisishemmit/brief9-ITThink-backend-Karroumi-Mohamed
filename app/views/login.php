@@ -6,6 +6,9 @@
 </head>
 
 <body>
+    <?php if (has_error('login')) : ?>
+        <p style="color: red;"><?= get_error('login') ?></p>
+    <?php endif; ?>
     <h2>Login</h2>
     <form method="POST" action="/login">
         <label>Email:</label><br>

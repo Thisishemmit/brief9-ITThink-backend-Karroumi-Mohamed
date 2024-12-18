@@ -7,6 +7,7 @@ $routers = [
     '/' => 'app/controllers/index.php',
     '/login' => 'app/controllers/login.php',
     '/register' => 'app/controllers/register.php',
+    '/logout' => 'app/controllers/logout.php',
 ];
 
 if (array_key_exists($path, $routers)) {
