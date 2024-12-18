@@ -2,9 +2,6 @@
 function create_database()
 {
     $db_config = require "app/config/database.php";
-    echo '<pre>';
-    var_dump($db_config);
-    echo '</pre>';
 
     $pdo = null;
     try {
