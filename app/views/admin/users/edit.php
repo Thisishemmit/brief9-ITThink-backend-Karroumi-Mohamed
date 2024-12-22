@@ -19,7 +19,8 @@
             </div>
 
             <div class="bg-white rounded-lg shadow-md p-6">
-                <form method="POST" action="">
+                <form method="POST" action="/admin/users?action=edit&id=<?= $user['id_user'] ?>">
+                    <input type="hidden" name="id_user" value="<?= $user['id_user'] ?>">
                     <div class="mb-4">
                         <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
                         <input type="text" name="name" id="name" value="<?= htmlspecialchars($user['name']) ?>" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
