@@ -18,3 +18,10 @@ function has_error($key)
 {
     return isset($_SESSION["error_{$key}"]);
 }
+
+function abort($code = 404)
+{
+    http_response_code($code);
+    require 'app/views/errors/' . $code . '.php';
+    die();
+}
