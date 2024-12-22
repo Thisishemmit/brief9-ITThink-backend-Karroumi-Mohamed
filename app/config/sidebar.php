@@ -1,5 +1,50 @@
 <?php
 
+$sidebar = [
+    'admin' => [
+        '/admin/users' =>  [
+            'name' => 'Users Management',
+            'icon' => 'group',
+            'path' => 'app/controllers/admin/users.php',
+            'roles' => ['admin']
+        ],
+        '/admin/projects' => [
+            'name' => 'Projects',
+            'icon' => 'work',
+            'path' => 'app/controllers/admin/projects.php',
+            'roles' => ['admin']
+        ],
+        '/admin/categories' => [
+            'name' => 'Categories',
+            'icon' => 'category',
+            'path' => 'app/controllers/admin/categories.php',
+            'roles' => ['admin']
+        ],
+        '/admin/offers' => [
+            'name' => 'Offers',
+            'icon' => 'description',
+            'path' => 'app/controllers/admin/offers.php',
+            'roles' => ['admin']
+        ],
+        '/admin/testimonials' => [
+            'name' => 'Testimonials',
+            'icon' => 'rate_review',
+            'path' => 'app/controllers/admin/testimonials.php',
+            'roles' => ['admin']
+        ],
+        '/admin/statistics' => [
+            'name' => 'Statistics',
+            'icon' => 'analytics',
+            'path' => 'app/controllers/admin/statistics.php',
+            'roles' => ['admin']
+
+        ]
+    ]
+];
+
+// array of only the keys of admin sidebar in a local log file
+file_put_contents('log.txt', print_r(array_keys($sidebar['admin']), true));
+
 return [
     'admin' => [
         '/admin/users' =>  [

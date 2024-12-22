@@ -1,0 +1,9 @@
+Array
+(
+    [0] => /admin/users
+    [1] => /admin/projects
+    [2] => /admin/categories
+    [3] => /admin/offers
+    [4] => /admin/testimonials
+    [5] => /admin/statistics
+)
