@@ -1,0 +1,290 @@
+diff --git a/Schemas/schema.sql b/Schemas/schema.sql
+index aba1db7..d0625cd 100755
+--- a/Schemas/schema.sql
++++ b/Schemas/schema.sql
+@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS Projects(
+     id_category INT,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     FOREIGN KEY (id_user) REFERENCES Users(id_user) ON DELETE CASCADE,
+-    FOREIGN KEY (id_category) REFERENCES Categories(id_category) ON DELETE CASCADE,
+-    FOREIGN KEY (id_subcategory) REFERENCES Subcategories(id_subcategory) ON DELETE CASCADE
++    FOREIGN KEY (id_category) REFERENCES Categories(id_category) ON DELETE SET NULL,
++    FOREIGN KEY (id_subcategory) REFERENCES Subcategories(id_subcategory) ON DELETE SET NULL
+ );
+ 
+ CREATE TABLE IF NOT EXISTS Offers(
+diff --git a/app/controllers/index.php b/app/controllers/index.php
+index e429f24..639ba83 100644
+--- a/app/controllers/index.php
++++ b/app/controllers/index.php
+@@ -1,5 +1,5 @@
+ <?php
+ 
+ require_auth();
+-require_once __DIR__ . '/../views/index.php';
++require_once __DIR__ . '/../views/dashboard.php';
+ 
+diff --git a/app/helpers/auth.php b/app/helpers/auth.php
+index 56bcbe6..bae7795 100644
+--- a/app/helpers/auth.php
++++ b/app/helpers/auth.php
+@@ -31,3 +31,34 @@ function require_guest()
+         exit;
+     }
+ }
++
++function getCurrentUserRole() {
++    return $_SESSION['user']['role'] ?? null;
++}
++
++function getCurrentUserName() {
++    return $_SESSION['user']['name'] ?? null;
++}
++
++function check_role($required_roles_set) {
++    if (!is_logged_in()) {
++        return false;
++    }
++    $user_role = $_SESSION['user']['role'];
++
++    if (!in_array($user_role, $required_roles_set)) {
++        return false;
++    }
++    return true;
++}
++
++function check_authorization($roles) {
++    if (in_array('all', $roles)) {
++        return;
++    }
++    if (is_logged_in() && !check_role($roles)) {
++        http_response_code(401);
++        require 'app/views/errors/401.php';
++        die();
++    }
++}
+diff --git a/app/helpers/errors.php b/app/helpers/errors.php
+index f164d28..b4b13fe 100644
+--- a/app/helpers/errors.php
++++ b/app/helpers/errors.php
+@@ -18,3 +18,10 @@ function has_error($key)
+ {
+     return isset($_SESSION["error_{$key}"]);
+ }
++
++function abort($code = 404)
++{
++    http_response_code($code);
++    require 'app/views/errors/' . $code . '.php';
++    die();
++}
+\ No newline at end of file
+diff --git a/app/models/user.php b/app/models/user.php
+index b66c20c..4b8fb8c 100644
+--- a/app/models/user.php
++++ b/app/models/user.php
+@@ -6,7 +6,12 @@ function find_user_by_email($email, $pdo)
+     $stmt->execute([':email' => $email]);
+     return $stmt->fetch();
+ }
+-
++function get_freelancer_by_user_id($user_id, $pdo)
++{
++    $stmt = $pdo->prepare("SELECT * FROM Freelancers WHERE id_user = :id_user");
++    $stmt->execute([':id_user' => $user_id]);
++    return $stmt->fetch();
++}
+ function verify_user_credentials($email, $password, $pdo)
+ {
+     $user = find_user_by_email($email, $pdo);
+diff --git a/app/views/index.php b/app/views/index.php
+deleted file mode 100644
+index 58a24d2..0000000
+--- a/app/views/index.php
++++ /dev/null
+@@ -1,19 +0,0 @@
+-<!-- app/views/index.php -->
+-<!DOCTYPE html>
+-<html>
+-
+-<head>
+-    <title>Home</title>
+-</head>
+-
+-<body>
+-    <h1>Welcome to the Home Page</h1>
+-    <?php if (isset($_SESSION['user'])): ?>
+-        <p>Hello, <?php echo htmlspecialchars($_SESSION['user']['name']); ?></p>
+-        <a href="/logout">Logout</a>
+-    <?php else: ?>
+-        <p><a href="/login">Login</a> | <a href="/register">Register</a></p>
+-    <?php endif; ?>
+-</body>
+-
+-</html>
+diff --git a/app/views/login.php b/app/views/login.php
+index 9744b2c..07b2269 100644
+--- a/app/views/login.php
++++ b/app/views/login.php
+@@ -23,16 +23,16 @@
+                 </div>
+             <?php endif; ?>
+ 
+-            <form class="mt-8 space-y-6" method="POST" action="/login">
++            <form class="mt-8 space-y-6" method="POST" action="/login" autocomplete="off">
+                 <div class="rounded-md shadow-sm space-y-4">
+                     <div>
+                         <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+-                        <input type="email" name="email" required 
++                        <input type="email" name="email" required autocomplete="off" placeholder="Email" value=""
+                             class="mt-1 appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm">
+                     </div>
+                     <div>
+                         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+-                        <input type="password" name="password" required 
++                        <input type="password" name="password" required autocomplete="off" placeholder="Password" value=""
+                             class="mt-1 appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm">
+                     </div>
+                 </div>
+diff --git a/app/views/register.php b/app/views/register.php
+index 3c3744b..3401947 100644
+--- a/app/views/register.php
++++ b/app/views/register.php
+@@ -22,7 +22,7 @@
+             <form class="mt-8 space-y-6" method="POST" action="/register">
+                 <div class="rounded-md shadow-sm space-y-4">
+                     <div>
+-                        <label for="name" class="block text-sm font-medium text-gray-700">Username</label>
++                        <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                         <input type="text" name="name" required 
+                             class="mt-1 appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm">
+                     </div>
+diff --git a/routes.php b/routes.php
+index c8fdc22..f5b47c4 100644
+--- a/routes.php
++++ b/routes.php
+@@ -1,19 +1,113 @@
+ <?php
++require_once 'app/helpers/logs.php';
++require_once 'app/helpers/auth.php';
++require_once 'app/helpers/errors.php';
++require_once 'app/helpers/routes.php';
++
++$sidebar_routes = require_once 'app/config/sidebar.php';
++
++$public_routes = [
++    '/' => [
++        'path' => 'app/controllers/index.php',
++        'roles' => ['client', 'freelancer', 'admin']
++    ],
++    '/login' => [
++        'path' => 'app/controllers/login.php',
++        'roles' => ['all']
++    ],
++    '/register' => [
++        'path' => 'app/controllers/register.php',
++        'roles' => ['all']
++    ],
++    '/logout' => [
++        'path' => 'app/controllers/logout.php',
++        'roles' => [
++            'client',
++            'freelancer',
++            'admin'
++        ]
++    ],
++];
++
++$client_actions = [
++    '/client/projects/create' => [
++        'path' => 'app/controllers/client/projects/create.php',
++        'roles' => ['client']
++    ],
++    '/client/projects/get_subcategories' => [
++        'path' => 'app/controllers/client/projects/get_subcategories.php',
++        'roles' => ['client']
++    ],
++    '/client/projects/([0-9]+)' => [
++        'path' => 'app/controllers/client/projects/view.php',
++        'roles' => ['client']
++    ],
++    '/client/projects/([0-9]+)/edit' => [
++        'path' => 'app/controllers/client/projects/edit.php',
++        'roles' => ['client']
++    ]
++];
++
++$freelancer_actions = [
++    '/freelancer/projects/([0-9]+)' => [
++        'path' => 'app/controllers/freelancer/projects/view.php',
++        'roles' => ['freelancer']
++    ]
++];
++
++if (is_logged_in()) {
++
++    $merged_routes = array_merge($sidebar_routes['freelancer'], $sidebar_routes['client'], $sidebar_routes['admin']);
++    $routes = array_merge($public_routes, $merged_routes, $sidebar_routes['all'], $client_actions, $freelancer_actions);
++} else {
++    $routes = $public_routes;
++}
++
+ $uri = $_SERVER['REQUEST_URI'];
+ $path = parse_url($uri)['path'];
+ 
++$requires_auth = false;
++if (!array_key_exists($path, $public_routes)) {
++    foreach ($client_actions as $route => $config) {
++        if (preg_match('#^' . $route . '$#', $path) || $path === '/client/projects') {
++            $requires_auth = true;
++            break;
++        }
++    }
++    foreach ($freelancer_actions as $route => $config) {
++        if (preg_match('#^' . $route . '$#', $path) || $path === '/freelancer/projects') {
++            $requires_auth = true;
++            break;
++        }
++    }
++    if (
++        isset($sidebar_routes['client'][$path]) ||
++        isset($sidebar_routes['freelancer'][$path]) ||
++        isset($sidebar_routes['admin'][$path])
++    ) {
++        $requires_auth = true;
++    }
++}
+ 
+-$routers = [
+-    '/' => 'app/controllers/index.php',
+-    '/login' => 'app/controllers/login.php',
+-    '/register' => 'app/controllers/register.php',
+-    '/logout' => 'app/controllers/logout.php',
+-];
++if ($requires_auth && !is_logged_in()) {
++    header('Location: /login');
++    exit;
++}
++$action_routes = array_merge($client_actions, $freelancer_actions);
+ 
+-if (array_key_exists($path, $routers)) {
+-    require $routers[$path];
++if (array_key_exists($path, $routes) || is_path_dynamic($path, $action_routes)) {
++    if (is_path_dynamic($path, $action_routes)) {
++        foreach ($action_routes as $route => $config) {
++            if (preg_match('#^' . $route . '$#', $path)) {
++                check_authorization($config['roles']);
++                handle_dynamic_route($path, $action_routes);
++                break;
++            }
++        }
++    } else {
++        check_authorization($routes[$path]['roles']);
++        require $routes[$path]['path'];
++    }
+ } else {
+-    http_response_code(404);
+-    echo '404';
+-    die();
++    abort(404);
+ }
