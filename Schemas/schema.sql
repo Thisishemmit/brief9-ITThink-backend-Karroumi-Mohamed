@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS Testimonials (
     id_freelancer INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_user) REFERENCES Users(id_user) ON DELETE CASCADE,
-    FOREIGN KEY (id_freelancer) REFERENCES Users(id_user) ON DELETE CASCADE
+    FOREIGN KEY (id_freelancer) REFERENCES Freelancers(id_freelancer) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Categories(
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS Subcategories(
     id_subcategory INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     id_category INT NOT NULL,
-    FOREIGN KEY (id_category) REFERENCES Categories(id_category) ON DELETE CASCADE
+    FOREIGN KEY (id_category) REFERENCES Categories(id_category) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS Projects(

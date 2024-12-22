@@ -27,6 +27,14 @@ $public_routes = [
             'admin'
         ]
     ],
+    '/dashboard' => [
+        'path' => 'app/controllers/dashboard.php',
+        'roles' => ['client', 'freelancer', 'admin']
+    ],
+    '/profile' => [
+        'path' => 'app/controllers/profile.php',
+        'roles' => ['client', 'freelancer', 'admin']
+    ]
 ];
 
 $client_actions = [
