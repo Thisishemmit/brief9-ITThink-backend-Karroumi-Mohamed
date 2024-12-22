@@ -35,3 +35,9 @@ function register_user($name, $email, $password, $pdo)
         ':password' => password_hash($password, PASSWORD_DEFAULT)
     ]);
 }
+
+function get_all_users($pdo) {
+    $stmt = $pdo->prepare("SELECT * FROM Users");
+    $stmt->execute();
+    return $stmt->fetchAll();
+}

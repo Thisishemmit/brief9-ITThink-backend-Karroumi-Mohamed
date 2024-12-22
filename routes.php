@@ -3,6 +3,7 @@ require_once 'app/helpers/logs.php';
 require_once 'app/helpers/auth.php';
 require_once 'app/helpers/errors.php';
 require_once 'app/helpers/routes.php';
+require_once 'app/models/user.php';
 
 $sidebar_routes = require_once 'app/config/sidebar.php';
 
@@ -27,14 +28,13 @@ $public_routes = [
             'admin'
         ]
     ],
-    '/dashboard' => [
-        'path' => 'app/controllers/dashboard.php',
-        'roles' => ['client', 'freelancer', 'admin']
+];
+
+$admin_actions = [
+    '/admin/users/([0-9]+)/edit' => [
+        'path' => 'app/controllers/admin/users/edit.php',
+        'roles' => ['admin']
     ],
-    '/profile' => [
-        'path' => 'app/controllers/profile.php',
-        'roles' => ['client', 'freelancer', 'admin']
-    ]
 ];
 
 $client_actions = [
@@ -101,7 +101,7 @@ if ($requires_auth && !is_logged_in()) {
     header('Location: /login');
     exit;
 }
-$action_routes = array_merge($client_actions, $freelancer_actions);
+$action_routes = array_merge($client_actions, $freelancer_actions, $admin_actions);
 
 if (array_key_exists($path, $routes) || is_path_dynamic($path, $action_routes)) {
     if (is_path_dynamic($path, $action_routes)) {
