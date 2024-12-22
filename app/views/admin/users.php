@@ -65,7 +65,7 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="/admin/users?action=edit&id=<?= $user['id_user'] ?>"
+                                        <a href="/admin/users/<?= $user['id_user'] ?>/edit"
                                            class="text-blue-600 hover:text-blue-900">Edit</a>
                                         <form method="POST" action="/admin/users?action=delete&id=<?= $user['id_user'] ?>" class="inline">
                                             <button type="submit" class="text-red-600 hover:text-red-900 ml-4">Delete</button>
