@@ -28,42 +28,13 @@ $public_routes = [
             'admin'
         ]
     ],
-    '/dashboard' => [
-        'path' => 'app/controllers/dashboard.php',
-        'roles' => ['client', 'freelancer', 'admin']
-    ],
-    '/profile' => [
-        'path' => 'app/controllers/profile.php',
-        'roles' => ['client', 'freelancer', 'admin']
-    ],
-    '/admin/users' => [
-        'path' => 'app/controllers/admin/users.php',
-        'roles' => ['admin']
-    ],
-    '/admin/projects' => [
-        'path' => 'app/controllers/admin/projects.php',
-        'roles' => ['admin']
-    ],
-    '/admin/categories' => [
-        'path' => 'app/controllers/admin/categories.php',
-        'roles' => ['admin']
-    ],
-    '/admin/offers' => [
-        'path' => 'app/controllers/admin/offers.php',
-        'roles' => ['admin']
-    ],
-    '/admin/testimonials' => [
-        'path' => 'app/controllers/admin/testimonials.php',
-        'roles' => ['admin']
-    ],
-    '/admin/statistics' => [
-        'path' => 'app/controllers/admin/statistics.php',
-        'roles' => ['admin']
-    ],
+];
+
+$admin_actions = [
     '/admin/users/([0-9]+)/edit' => [
-        'path' => 'app/controllers/admin/users.php',
+        'path' => 'app/controllers/admin/users/edit.php',
         'roles' => ['admin']
-    ]
+    ],
 ];
 
 $client_actions = [
@@ -130,7 +101,7 @@ if ($requires_auth && !is_logged_in()) {
     header('Location: /login');
     exit;
 }
-$action_routes = array_merge($client_actions, $freelancer_actions);
+$action_routes = array_merge($client_actions, $freelancer_actions, $admin_actions);
 
 if (array_key_exists($path, $routes) || is_path_dynamic($path, $action_routes)) {
     if (is_path_dynamic($path, $action_routes)) {
