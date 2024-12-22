@@ -36,6 +36,34 @@ $public_routes = [
         'path' => 'app/controllers/profile.php',
         'roles' => ['client', 'freelancer', 'admin']
     ],
+    '/admin/users' => [
+        'path' => 'app/controllers/admin/users.php',
+        'roles' => ['admin']
+    ],
+    '/admin/projects' => [
+        'path' => 'app/controllers/admin/projects.php',
+        'roles' => ['admin']
+    ],
+    '/admin/categories' => [
+        'path' => 'app/controllers/admin/categories.php',
+        'roles' => ['admin']
+    ],
+    '/admin/offers' => [
+        'path' => 'app/controllers/admin/offers.php',
+        'roles' => ['admin']
+    ],
+    '/admin/testimonials' => [
+        'path' => 'app/controllers/admin/testimonials.php',
+        'roles' => ['admin']
+    ],
+    '/admin/statistics' => [
+        'path' => 'app/controllers/admin/statistics.php',
+        'roles' => ['admin']
+    ],
+    '/admin/users/([0-9]+)/edit' => [
+        'path' => 'app/controllers/admin/users.php',
+        'roles' => ['admin']
+    ]
 ];
 
 $client_actions = [
@@ -64,17 +92,10 @@ $freelancer_actions = [
     ]
 ];
 
-$admin_actions = [
-    '/admin/users/([0-9]+)/edit' => [
-        'path' => 'app/controllers/admin/users/edit.php',
-        'roles' => ['admin']
-    ]
-];
-
 if (is_logged_in()) {
 
     $merged_routes = array_merge($sidebar_routes['freelancer'], $sidebar_routes['client'], $sidebar_routes['admin']);
-    $routes = array_merge($public_routes, $merged_routes, $sidebar_routes['all'], $client_actions, $freelancer_actions, $admin_actions);
+    $routes = array_merge($public_routes, $merged_routes, $sidebar_routes['all'], $client_actions, $freelancer_actions);
 } else {
     $routes = $public_routes;
 }
@@ -82,7 +103,6 @@ if (is_logged_in()) {
 $uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($uri)['path'];
 
-$action_routes = array_merge($client_actions, $freelancer_actions, $admin_actions);
 $requires_auth = false;
 if (!array_key_exists($path, $public_routes)) {
     foreach ($client_actions as $route => $config) {
@@ -97,7 +117,6 @@ if (!array_key_exists($path, $public_routes)) {
             break;
         }
     }
-
     if (
         isset($sidebar_routes['client'][$path]) ||
         isset($sidebar_routes['freelancer'][$path]) ||
@@ -111,6 +130,7 @@ if ($requires_auth && !is_logged_in()) {
     header('Location: /login');
     exit;
 }
+$action_routes = array_merge($client_actions, $freelancer_actions);
 
 if (array_key_exists($path, $routes) || is_path_dynamic($path, $action_routes)) {
     if (is_path_dynamic($path, $action_routes)) {
