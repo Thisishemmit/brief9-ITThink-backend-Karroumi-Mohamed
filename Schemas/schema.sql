@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS Projects(
     id_category INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_user) REFERENCES Users(id_user) ON DELETE CASCADE,
-    FOREIGN KEY (id_category) REFERENCES Categories(id_category) ON DELETE CASCADE,
-    FOREIGN KEY (id_subcategory) REFERENCES Subcategories(id_subcategory) ON DELETE CASCADE
+    FOREIGN KEY (id_category) REFERENCES Categories(id_category) ON DELETE SET NULL,
+    FOREIGN KEY (id_subcategory) REFERENCES Subcategories(id_subcategory) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS Offers(
