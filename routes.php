@@ -34,6 +34,30 @@ $public_routes = [
     '/profile' => [
         'path' => 'app/controllers/profile.php',
         'roles' => ['client', 'freelancer', 'admin']
+    ],
+    '/admin/users' => [
+        'path' => 'app/controllers/admin/users.php',
+        'roles' => ['admin']
+    ],
+    '/admin/projects' => [
+        'path' => 'app/controllers/admin/projects.php',
+        'roles' => ['admin']
+    ],
+    '/admin/categories' => [
+        'path' => 'app/controllers/admin/categories.php',
+        'roles' => ['admin']
+    ],
+    '/admin/offers' => [
+        'path' => 'app/controllers/admin/offers.php',
+        'roles' => ['admin']
+    ],
+    '/admin/testimonials' => [
+        'path' => 'app/controllers/admin/testimonials.php',
+        'roles' => ['admin']
+    ],
+    '/admin/statistics' => [
+        'path' => 'app/controllers/admin/statistics.php',
+        'roles' => ['admin']
     ]
 ];
 
