@@ -3,6 +3,7 @@ require_once 'app/helpers/logs.php';
 require_once 'app/helpers/auth.php';
 require_once 'app/helpers/errors.php';
 require_once 'app/helpers/routes.php';
+require_once 'app/models/user.php';
 
 $sidebar_routes = require_once 'app/config/sidebar.php';
 
@@ -57,6 +58,10 @@ $public_routes = [
     ],
     '/admin/statistics' => [
         'path' => 'app/controllers/admin/statistics.php',
+        'roles' => ['admin']
+    ],
+    '/admin/users/([0-9]+)/edit' => [
+        'path' => 'app/controllers/admin/users.php',
         'roles' => ['admin']
     ]
 ];
